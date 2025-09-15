@@ -4,80 +4,191 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>途羚公寓-预约信息</title>
-    <!-- 引入 Tailwind CSS（快速实现样式） -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 自定义 Tailwind 配置（主题颜色、字体等） -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#a5d7e8', // 提交按钮的浅蓝色（可自行修改）
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                }
-            }
+    <style>
+        /* 自定义样式，适配移动端 */
+        body {
+            background: linear-gradient(to bottom, #e0f5ff, #c9e9ff);
+            font-family: 'PingFang SC', sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
         }
-    </script>
-    <!-- 自定义工具类（输入框、按钮样式） -->
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .form-input {
-                @apply w-full px-4 py-3 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200 
-                       focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition-all;
-            }
-            .submit-button {
-                @apply w-full max-w-xs mx-auto py-3 rounded-full bg-primary text-gray-800 font-medium 
-                       hover:bg-primary/90 transition-all transform hover:scale-105;
-            }
+        .container {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 40px auto;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-label {
+            display: block;
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .date-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .submit-btn {
+            width: 100%;
+            background: #40a9ff;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .submit-btn:hover {
+            background: #1890ff;
+        }
+        /* 成功提示弹窗 */
+        #success-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .popup-content {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .popup-icon {
+            font-size: 48px;
+            color: #40a9ff;
+            margin-bottom: 16px;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 font-sans">
-    <!-- 背景图（可替换为自己的图片，需放到 GitHub 仓库的 images 文件夹） -->
-    <div class="absolute inset-0 z-0">
-        <!-- 示例：使用 picsum.photos 随机自然图；替换为自己的图：src="images/your-background.jpg" -->
-        <img src="https://picsum.photos/1080/1920?nature" alt="自然背景" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-black/30"></div> <!-- 背景遮罩，让文字更清晰 -->
-    </div>
-
-    <!-- 内容容器（置于背景之上） -->
-    <div class="relative z-10 w-full max-w-md flex flex-col items-center">
-        <!-- Logo + 标题区域 -->
-        <div class="flex flex-col items-center mb-8">
-            <!-- 示例 Logo（可替换为自己的 SVG/图片，如 src="images/logo.svg"） -->
-            <div class="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01m3 0h.01m3 0h.01m3 0h.01m3 0h.01m-6-6h.01m3 0h.01m3 0h.01m3 0h.01m-6 6h.01m3 0h.01m3 0h.01m3 0h.01" />
-                </svg>
+<body>
+    <div class="container">
+        <h1 style="color: #2c3e50; text-align: center; margin-bottom: 32px;">途羚公寓预约</h1>
+        
+        <form id="bookingForm">
+            <!-- 经办人 -->
+            <div class="form-group">
+                <label class="form-label">经办人</label>
+                <input type="text" class="form-input" 
+                       name="entry.1185747393" required>
             </div>
-            <h1 class="text-2xl font-bold text-white">途羚公寓</h1>
-            <h2 class="text-xl text-white mt-4">预约信息</h2>
-        </div>
 
-        <!-- 表单区域 -->
-        <form class="w-full space-y-4">
-            <input type="text" placeholder="经办人" class="form-input" required>
-            <input type="tel" placeholder="联系电话" class="form-input" required>
-            <input type="text" placeholder="您的公司名称" class="form-input">
-            <input type="text" placeholder="您需要入住的城市" class="form-input" required>
-            <input type="number" placeholder="入住人数" class="form-input" required>
-            <input type="date" placeholder="期望入住时间" class="form-input" required>
+            <!-- 联系电话（含验证） -->
+            <div class="form-group">
+                <label class="form-label">联系电话</label>
+                <input type="tel" class="form-input" 
+                       name="entry.1879176523" 
+                       required 
+                       pattern="^1[3-9]\d{9}$"
+                       title="请输入11位手机号">
+            </div>
 
-            <!-- 隐私承诺文字 -->
-            <div class="text-white/80 text-sm mt-2 px-4">
-                <p class="font-medium">隐私承诺</p>
-                <p>您的信息仅用于服务对接，我们严格保密</p>
+            <!-- 公司名称（可选） -->
+            <div class="form-group">
+                <label class="form-label">公司名称（可选）</label>
+                <input type="text" class="form-input" 
+                       name="entry.524946296">
+            </div>
+
+            <!-- 入住城市 -->
+            <div class="form-group">
+                <label class="form-label">入住城市</label>
+                <input type="text" class="form-input" 
+                       name="entry.2081592603" required>
+            </div>
+
+            <!-- 入住人数 -->
+            <div class="form-group">
+                <label class="form-label">入住人数</label>
+                <input type="number" class="form-input" 
+                       name="entry.1315030909" 
+                       min="1" required>
+            </div>
+
+            <!-- 期望入住时间（拆分为年/月/日） -->
+            <div class="form-group">
+                <label class="form-label">期望入住时间</label>
+                <div class="date-group">
+                    <input type="number" class="form-input" 
+                           name="entry.107773643_year" 
+                           placeholder="年" 
+                           min="2023" max="2030" required>
+                    <input type="number" class="form-input" 
+                           name="entry.107773643_month" 
+                           placeholder="月" 
+                           min="1" max="12" required>
+                    <input type="number" class="form-input" 
+                           name="entry.107773643_day" 
+                           placeholder="日" 
+                           min="1" max="31" required>
+                </div>
             </div>
 
             <!-- 提交按钮 -->
-            <button type="submit" class="submit-button mt-6">提交</button>
+            <button type="submit" class="submit-btn">立即预约</button>
         </form>
     </div>
+
+    <!-- 成功提示弹窗 -->
+    <div id="success-popup">
+        <div class="popup-content">
+            <div class="popup-icon">&#10004;</div>
+            <p style="font-size: 20px; color: #333; margin-bottom: 16px;">
+                提交成功！<br>途羚将尽快与您联系~
+            </p>
+            <button onclick="closePopup()" class="submit-btn" style="width: auto; padding: 8px 24px;">
+                确定
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 表单提交逻辑
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // 阻止默认提交（避免跳转）
+            
+            // 验证手机号
+            const phoneInput = document.querySelector('input[name="entry.1879176523"]');
+            if (!phoneInput.validity.valid) {
+                alert('请输入有效的11位手机号');
+                return;
+            }
+
+            // 模拟提交（实际发送到Google Forms）
+            this.submit(); // 触发真实提交
+
+            // 显示成功弹窗
+            document.getElementById('success-popup').style.display = 'flex';
+        });
+
+        // 关闭弹窗
+        function closePopup() {
+            document.getElementById('success-popup').style.display = 'none';
+            // 清空表单（可选）
+            document.getElementById('bookingForm').reset();
+        }
+    </script>
 </body>
 </html>
