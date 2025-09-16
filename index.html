@@ -80,29 +80,6 @@
       color: #333;
       outline: none;
       transition: all 0.3s;
-      /* 确保输入框在所有设备上都显示 */
-      display: block !important;
-      visibility: visible !important;
-      height: auto !important;
-      opacity: 1 !important;
-    }
-
-    /* 特别针对日期输入框的样式，确保在手机上可见 */
-    input[type="date"] {
-      /* 为移动设备设置特定样式 */
-      -webkit-appearance: none;
-      appearance: none;
-      position: relative;
-    }
-
-    /* 为日期输入框添加图标提示 */
-    input[type="date"]::after {
-      content: "📅";
-      position: absolute;
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      pointer-events: none;
     }
 
     input::placeholder {
@@ -142,6 +119,7 @@
       box-shadow: 0 4px 12px rgba(179, 212, 252, 0.5);
     }
 
+    /* 提交成功提示 */
     .success-tip {
       display: none;
       color: white;
@@ -149,23 +127,6 @@
       text-align: center;
       margin-top: 20px;
       padding: 20px;
-    }
-
-    /* 确保在小屏幕上表单元素正确显示 */
-    @media (max-width: 480px) {
-      .form-box {
-        padding: 15px;
-      }
-      
-      input {
-        padding: 12px 15px;
-        margin: 8px 0;
-      }
-      
-      /* 确保日期输入框在小屏幕上有足够高度 */
-      input[type="date"] {
-        min-height: 44px;
-      }
     }
   </style>
 </head>
@@ -180,16 +141,15 @@
   </div>
 
   <div class="form-box">
+    <!-- 注意：请替换下面的action为你的腾讯问卷正确收集链接 -->
     <form id="reservation-form" action="https://wj.qq.com/s2/你的问卷ID/xxx/" method="post">
       <input type="text" name="q1" placeholder="经办人" required>
       <input type="tel" name="q2" placeholder="联系电话" required pattern="^1[3-9]\d{9}$">
       <input type="text" name="q3" placeholder="您的公司名称">
       <input type="text" name="q4" placeholder="您需要入住的城市" required>
       <input type="number" name="q5" placeholder="入住人数" required min="1">
-      <!-- 日期输入框 - 修复手机端显示问题 -->
-      <input type="date" name="q6" placeholder="期望入住时间" required 
-             onfocus="this.type='date'" 
-             onblur="if(!this.value) this.type='text'">
+      <!-- 以下是修复的“期望入住时间”输入框 -->
+      <input type="date" name="q6" placeholder="期望入住时间" required>
       
       <div class="privacy">
         <strong>隐私承诺</strong><br>
@@ -203,52 +163,25 @@
   </div>
 
   <script>
-    // 检测是否为移动设备
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    // 获取日期输入框
-    const dateInput = document.querySelector('input[type="date"]');
-    
-    // 针对移动设备的特殊处理
-    if (isMobile && dateInput) {
-      // 确保移动设备上日期输入框正确显示
-      dateInput.type = 'text';
-      dateInput.placeholder = '期望入住时间 (点击选择日期)';
-      
-      // 点击时切换为日期选择器
-      dateInput.addEventListener('click', function() {
-        this.type = 'date';
-        setTimeout(() => {
-          this.focus();
-        }, 100);
-      });
-      
-      // 失去焦点且未输入内容时，切换回文本类型以显示占位符
-      dateInput.addEventListener('blur', function() {
-        if (!this.value) {
-          this.type = 'text';
-        }
-      });
-    }
-
-    // 表单提交处理
     const form = document.getElementById('reservation-form');
     const successTip = document.getElementById('successTip');
-    const tencentFormUrl = form.action;
+    const tencentFormUrl = form.action; // 腾讯问卷的提交地址
 
     form.addEventListener('submit', function(event) {
       event.preventDefault();
 
-      // 提交数据到腾讯问卷
+      // 1. 先提交数据到腾讯问卷
       const formData = new FormData(form);
       fetch(tencentFormUrl, {
         method: 'POST',
         body: formData,
-        mode: 'no-cors'
+        mode: 'no-cors' // 解决跨域问题（腾讯问卷支持）
       }).then(() => {
+        // 2. 无论成功与否，都显示自定义成功提示
         form.style.display = 'none';
         successTip.style.display = 'block';
       }).catch(() => {
+        // 网络异常时也显示提示（避免用户重复提交）
         form.style.display = 'none';
         successTip.style.display = 'block';
       });
