@@ -24,24 +24,41 @@
       padding: 20px;
     }
 
+    /* Logo 容器：自适应居中 */
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      margin: clamp(15px, 3vw, 25px) 0; /* 上下间距自适应 */
+      width: 100%;
+      max-width: 500px;
+    }
+
+    /* Logo 样式：尺寸、背景图自适应 */
+    .logo {
+      width: clamp(60px, 12vw, 80px); /* 宽度随屏幕自适应（最小60px，最大80px） */
+      height: clamp(60px, 12vw, 80px); /* 高度随屏幕自适应 */
+      background: url("logo.png") no-repeat center center; /* 替换为你的Logo路径 */
+      background-size: contain; /* 保持Logo比例，不拉伸变形 */
+    }
+
     /* 标题区域：文字大小自适应 */
     .title-container {
       text-align: center;
-      margin: 20px 0;
+      margin: clamp(10px, 2vw, 20px) 0;
       width: 100%;
       max-width: 500px;
     }
 
     .title {
       color: white;
-      font-size: clamp(24px, 5vw, 28px); /* 最小24px，最大28px，随屏幕宽度变化 */
-      margin: 0 0 10px 0;
+      font-size: clamp(24px, 5vw, 28px); /* 文字大小随屏幕自适应 */
+      margin: 0 0 clamp(8px, 1vw, 10px) 0;
       text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
     .subtitle {
       color: white;
-      font-size: clamp(16px, 3vw, 18px); /* 副标题自适应 */
+      font-size: clamp(16px, 3vw, 18px); /* 副标题大小自适应 */
       margin: 0;
       text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
@@ -109,6 +126,11 @@
   </style>
 </head>
 <body>
+  <!-- Logo 区域 -->
+  <div class="logo-container">
+    <div class="logo"></div>
+  </div>
+
   <!-- 标题区域 -->
   <div class="title-container">
     <h1 class="title">途羚公寓</h1>
