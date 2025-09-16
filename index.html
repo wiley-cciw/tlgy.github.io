@@ -69,48 +69,51 @@
       align-items: center;
     }
 
+    .form-group {
+      width: 100%;
+      margin: clamp(10px, 2vw, 12px) 0;
+    }
+
     input {
       width: 100%;
       padding: clamp(12px, 3vw, 15px) clamp(15px, 4vw, 20px);
-      margin: clamp(10px, 2vw, 12px) 0;
-      border: none;
+      border: 1px solid rgba(255, 255, 255, 0.5); /* 明确边框确保可见 */
       border-radius: 30px;
       font-size: clamp(14px, 3vw, 16px);
       background-color: rgba(255, 255, 255, 0.7);
       color: #333;
       outline: none;
-      transition: all 0.3s;
-      /* 确保输入框在所有设备上都显示 */
-      display: block !important;
-      visibility: visible !important;
-      height: auto !important;
-      opacity: 1 !important;
+      min-height: 48px; /* 强制最小高度 */
+      box-sizing: border-box;
     }
 
-    /* 特别针对日期输入框的样式，确保在手机上可见 */
-    input[type="date"] {
-      /* 为移动设备设置特定样式 */
-      -webkit-appearance: none;
-      appearance: none;
+    /* 日期输入框专用样式 - 确保在所有设备可见 */
+    .date-input {
       position: relative;
     }
 
-    /* 为日期输入框添加图标提示 */
-    input[type="date"]::after {
+    .date-input input {
+      padding-right: 40px; /* 预留图标空间 */
+    }
+
+    .date-input::after {
       content: "📅";
       position: absolute;
-      right: 20px;
+      right: 15px;
       top: 50%;
       transform: translateY(-50%);
       pointer-events: none;
+      font-size: 18px;
     }
 
     input::placeholder {
-      color: #666;
+      color: #555; /* 更深的占位符颜色，确保可见 */
+      opacity: 1; /* 强制不透明 */
     }
 
     input:focus {
       box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+      border-color: rgba(255, 255, 255, 0.8);
     }
 
     .privacy {
@@ -151,20 +154,21 @@
       padding: 20px;
     }
 
-    /* 确保在小屏幕上表单元素正确显示 */
-    @media (max-width: 480px) {
+    /* 移动设备专用适配 */
+    @media (max-width: 768px) {
       .form-box {
-        padding: 15px;
+        padding: 15px 10px;
       }
-      
+
       input {
-        padding: 12px 15px;
-        margin: 8px 0;
+        min-height: 50px;
+        font-size: 16px;
       }
-      
-      /* 确保日期输入框在小屏幕上有足够高度 */
-      input[type="date"] {
-        min-height: 44px;
+
+      /* 确保日期输入框在移动设备上绝对可见 */
+      .date-input input {
+        background-color: rgba(255, 255, 255, 0.85) !important;
+        border: 1px solid #ddd !important;
       }
     }
   </style>
@@ -181,15 +185,25 @@
 
   <div class="form-box">
     <form id="reservation-form" action="https://wj.qq.com/s2/你的问卷ID/xxx/" method="post">
-      <input type="text" name="q1" placeholder="经办人" required>
-      <input type="tel" name="q2" placeholder="联系电话" required pattern="^1[3-9]\d{9}$">
-      <input type="text" name="q3" placeholder="您的公司名称">
-      <input type="text" name="q4" placeholder="您需要入住的城市" required>
-      <input type="number" name="q5" placeholder="入住人数" required min="1">
-      <!-- 日期输入框 - 修复手机端显示问题 -->
-      <input type="date" name="q6" placeholder="期望入住时间" required 
-             onfocus="this.type='date'" 
-             onblur="if(!this.value) this.type='text'">
+      <div class="form-group">
+        <input type="text" name="q1" placeholder="经办人" required>
+      </div>
+      <div class="form-group">
+        <input type="tel" name="q2" placeholder="联系电话" required pattern="^1[3-9]\d{9}$">
+      </div>
+      <div class="form-group">
+        <input type="text" name="q3" placeholder="您的公司名称">
+      </div>
+      <div class="form-group">
+        <input type="text" name="q4" placeholder="您需要入住的城市" required>
+      </div>
+      <div class="form-group">
+        <input type="number" name="q5" placeholder="入住人数" required min="1">
+      </div>
+      <!-- 日期输入框 - 采用最兼容方案 -->
+      <div class="form-group date-input">
+        <input type="text" name="q6" placeholder="期望入住时间（例如：2025-09-30）" required>
+      </div>
       
       <div class="privacy">
         <strong>隐私承诺</strong><br>
@@ -203,34 +217,6 @@
   </div>
 
   <script>
-    // 检测是否为移动设备
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    // 获取日期输入框
-    const dateInput = document.querySelector('input[type="date"]');
-    
-    // 针对移动设备的特殊处理
-    if (isMobile && dateInput) {
-      // 确保移动设备上日期输入框正确显示
-      dateInput.type = 'text';
-      dateInput.placeholder = '期望入住时间 (点击选择日期)';
-      
-      // 点击时切换为日期选择器
-      dateInput.addEventListener('click', function() {
-        this.type = 'date';
-        setTimeout(() => {
-          this.focus();
-        }, 100);
-      });
-      
-      // 失去焦点且未输入内容时，切换回文本类型以显示占位符
-      dateInput.addEventListener('blur', function() {
-        if (!this.value) {
-          this.type = 'text';
-        }
-      });
-    }
-
     // 表单提交处理
     const form = document.getElementById('reservation-form');
     const successTip = document.getElementById('successTip');
@@ -238,6 +224,16 @@
 
     form.addEventListener('submit', function(event) {
       event.preventDefault();
+
+      // 简单验证日期格式
+      const dateInput = document.querySelector('input[name="q6"]');
+      const datePattern = /^\d{4}-\d{2}-\d{2}$/;
+      
+      if (!datePattern.test(dateInput.value)) {
+        alert('请按照"年-月-日"格式输入日期（例如：2025-09-30）');
+        dateInput.focus();
+        return;
+      }
 
       // 提交数据到腾讯问卷
       const formData = new FormData(form);
